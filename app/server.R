@@ -28,10 +28,20 @@ server <- function(input, output, session) {
 
   ## format the data
 
-  # data <-
+  output$last24 <- DT::renderDataTable({
+    fullData() %>%
+      filter(Datetime >= Sys.time()-60*60*24) %>%
+      mutate(Datetime = format(Datetime,"%Y-%m-%d %H:%M")) %>%
+      datatable(
+        options = list(
+          order = list(1,'desc')
+        )
+      )
+
+  })
 
   ## print a graph of the last 24 ours
-  output$last24 <-
+  output$day_totals <-
     renderPlot({
 
       p <- fullData() %>%

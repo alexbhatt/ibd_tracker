@@ -8,12 +8,9 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      dateInput(inputId = "date",
-                label = "Date",
-                value = Sys.Date()),
-      textInput(inputId = "time",
-                label = "Time",
-                value = format(Sys.time(),"%H:%M:%S")),
+      textInput(inputId = "datetime",
+                label = "Datetime",
+                value = format(Sys.time(),"%Y-%m-%d %H:%M")),
       selectInput(inputId = "colour",
                   label = "Colour",
                   choices = c("Yellow","Orange","Brown","BrownRed","Red"),
@@ -37,7 +34,8 @@ ui <- fluidPage(
 
     # Show the table of results
     mainPanel(
-      DT::dataTableOutput("responses", width = 300), tags$hr(),
+      DT::dataTableOutput("last24"), tags$hr(),
+      plotOutput("day_totals")
     )
   )
 )

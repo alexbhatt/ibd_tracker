@@ -13,7 +13,7 @@ ui <- fluidPage(
                 value = Sys.Date()),
       textInput(inputId = "time",
                 label = "Time",
-                value = format(Sys.time(),"%H:%M")),
+                value = format(Sys.time(),"%H:%M:%S")),
       selectInput(inputId = "colour",
                   label = "Colour",
                   choices = c("Yellow","Orange","Brown","BrownRed","Red"),
@@ -31,13 +31,13 @@ ui <- fluidPage(
       textInput(inputId = "note",
                 label = "Notes",
                 value = ""),
-      actionButton(inputId = "poo",
+      actionButton(inputId = "submit",
                    label = "Submit")
     ),
 
-    # Show a plot of the generated distribution
+    # Show the table of results
     mainPanel(
-      plotOutput("distPlot")
+      DT::dataTableOutput("responses", width = 300), tags$hr(),
     )
   )
 )

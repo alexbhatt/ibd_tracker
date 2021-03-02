@@ -8,33 +8,41 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
     sidebarPanel(
-      textInput(inputId = "datetime",
+      # textInput(inputId = "Date",
+      #           label = "Date",
+      #           value = Sys.Date()),
+      # textInput(inputId = "Time",
+      #           label = "Time",
+      #           value = format(Sys.time(),"%H:%M:%S")),
+      textInput(inputId = "Datetime",
                 label = "Datetime",
-                value = format(Sys.time(),"%Y-%m-%d %H:%M")),
-      selectInput(inputId = "colour",
+                value = Sys.time()),
+      selectInput(inputId = "Colour",
                   label = "Colour",
                   choices = c("Yellow","Orange","Brown","BrownRed","Red"),
-                  selected = "Brown"),
-      selectInput(inputId = "bristol",
+                  selected = "BrownRed"),
+      selectInput(inputId = "Bristol_Score",
                   label = "Bristol Score",
                   choices = c(1:7),
-                  selected = 4),
-      checkboxInput(inputId = "blood",
+                  selected = 5),
+      checkboxInput(inputId = "Blood",
                     label = "Blood",
-                    value = 0),
-      checkboxInput(inputId = "sample",
+                    value = TRUE),
+      checkboxInput(inputId = "Sample",
                     label = "Sample",
-                    value = 0),
-      textInput(inputId = "note",
+                    value = FALSE),
+      textInput(inputId = "Notes",
                 label = "Notes",
                 value = ""),
-      actionButton(inputId = "submit",
-                   label = "Submit")
+      actionButton("submit","Add record")
     ),
 
-    # Show the table of results
+    # Show the table of results and the history graph
     mainPanel(
+      # tableOutput("formD"),
+      h3("Last 24 hours"),
       DT::dataTableOutput("last24"), tags$hr(),
+      h3("History"),
       plotOutput("day_totals")
     )
   )

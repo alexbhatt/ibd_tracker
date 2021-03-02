@@ -28,28 +28,39 @@ googlesheets4::gs4_auth(
 )
 
 # Define the fields we want to save from the form
-fields <- c("Datetime",
-            "Colour",
-            "Blood",
-            "Bristol_Score",
-            "Sample",
-            "Notes"
-            )
+# the names must match the inputID in the UI
+fields <- c(
+  # "Date",
+  # "Time",
+  "Datetime",
+  "Colour",
+  "Blood",
+  "Bristol_Score",
+  "Sample",
+  "Notes"
+)
 
-
-table <- "1bslpAy0ZeheM6cHdpouB7LL75bUbdfnY1iNjjcR8R6Y"
-table_stub <- "motions"
+## taken from googleURL
+gsheet_id <- "1bslpAy0ZeheM6cHdpouB7LL75bUbdfnY1iNjjcR8R6Y"
+gsheet_id_stub <- "motions"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
   data <- data %>% as.list() %>% data.frame()
   # Add the data as a new row
-  sheet_append(table, data)
+  googlesheets4::sheet_append(
+    ss = gsheet_id,
+    data = data,
+    sheet = gsheet_id_stub
+    )
 }
 
 loadData <- function() {
   # Read the data
-  read_sheet(table,
-             col_types = "Tcdddc"
-             )
+  googlesheets4::read_sheet(
+    gsheet_id,
+    col_names = TRUE,
+    col_types = "Tcdddc"
+    ) %>%
+    arrange(desc(Datetime))
 }

@@ -6,8 +6,7 @@ server <- function(input, output, session) {
 
   # Whenever a field is filled, aggregate all form data
   formData <- reactive({
-    data <- sapply(fields, function(x) input[[x]])
-    data
+    data <- sapply(fields,function(x) input[[x]])
   })
 
   # When the Submit button is clicked, save the form data
@@ -23,15 +22,27 @@ server <- function(input, output, session) {
   })
 
   fullData <- reactive({
+    input$submit
     loadData()
   })
 
-  ## format the data
+  output$formD <- renderTable({
+    input$submit
+    formData() %>%
+      as.list() %>%
+      data.frame()
+  })
 
+  ## format the data
+  ## go back 24 hours, time is counted in seconds * min * hours
   output$last24 <- DT::renderDataTable({
+
+      input$submit
+
     fullData() %>%
       filter(Datetime >= Sys.time()-60*60*24) %>%
-      mutate(Datetime = format(Datetime,"%Y-%m-%d %H:%M")) %>%
+      mutate(Datetime = format(Datetime, "%Y-%m-%d %H:%M")) %>%
+      # select(-c(Date,Time)) %>%
       datatable(
         options = list(
           order = list(1,'desc')
@@ -41,13 +52,13 @@ server <- function(input, output, session) {
   })
 
   ## print a graph of the last 24 ours
-  output$day_totals <-
-    renderPlot({
+  output$day_totals <- renderPlot({
+
+      input$submit
 
       p <- fullData() %>%
-        mutate(Date=as.Date(Datetime)) %>%
+        mutate(Date = as.Date(Datetime)) %>%
         group_by(Date,Colour,Bristol_Score) %>%
-        # filter(Datetime >= Sys.time()-60*60*24*2) %>%
         ggplot(aes(x=Date,
                    fill = Colour),
                color = "white") +
@@ -57,6 +68,8 @@ server <- function(input, output, session) {
                   color = "white",
                   position = position_stack(vjust = 0.5)) +
         scale_y_continuous(breaks = scales::pretty_breaks()) +
+        scale_x_date(breaks = "days",
+                     date_labels = "%d %b") +
         scale_fill_manual(values = c(
           "Brown" = "#A0522D",
           "BrownRed" = "#8B0000",

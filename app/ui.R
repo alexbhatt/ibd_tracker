@@ -3,7 +3,7 @@
 ui <- fluidPage(
 
   # Application title
-  titlePanel("IBD tracker"),
+  titlePanel("IBD flare tracker"),
 
   # Sidebar with a slider input for number of bins
   sidebarLayout(
@@ -11,7 +11,7 @@ ui <- fluidPage(
     sidebarPanel(
 
       ## first set of data collection
-      h3("Motions"),
+      h4("Motions"),
       textInput(inputId = "Datetime",
                 label = "Datetime",
                 value = Sys.time()),
@@ -23,19 +23,25 @@ ui <- fluidPage(
                   label = "Bristol Score",
                   choices = c(1:7),
                   selected = 5),
-      checkboxInput(inputId = "Blood",
-                    label = "Blood",
-                    value = TRUE),
-      checkboxInput(inputId = "Sample",
-                    label = "Sample",
-                    value = FALSE),
+      fluidRow(
+        column(6,
+        checkboxInput(inputId = "Blood",
+                      label = "Blood",
+                      value = TRUE)
+        ),
+        column(6,
+        checkboxInput(inputId = "Sample",
+                      label = "Sample",
+                      value = FALSE)
+        )
+      ),
       textInput(inputId = "Notes",
                 label = "Notes",
                 value = ""),
       actionButton("submit","Add bowel motion"),
 
       ## annotative dataset
-      h3("Events"),
+      h4("Events"),
       textInput(inputId = "Start_Date",
                 label = "Date",
                 value = Sys.Date()),

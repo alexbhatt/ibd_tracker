@@ -72,32 +72,32 @@ server <- function(input, output, session) {
 
       input$submit
 
-    # e <- googlesheets4::read_sheet(
-    #   ss = gsheet_id,
-    #   sheet = gsheet_id_stub2,
-    #   col_names = T,
-    #   col_types = "Dccc"
-    # )
+    e <- googlesheets4::read_sheet(
+      ss = gsheet_id,
+      sheet = gsheet_id_stub2,
+      col_names = T,
+      col_types = "Dccc"
+    )
 
       p <- fullData() %>%
         mutate(Date = as.Date(Datetime)) %>%
+        mutate(blocks = 1:n()) %>%
         ggplot(aes(x=Date,
                    fill = Colour,
                    color = as.factor(Blood))) +
-        geom_bar(stat="count") +
+        geom_bar(aes(group=blocks), stat="count", na.rm=T) +
         geom_text(aes(label = Bristol_Score,
                       y = 1),
                   color = "white",
-                  position = position_stack(vjust = 0.5)) +
+                  position = position_stack(vjust = 0.5),
+                  na.rm=T) +
         scale_y_continuous("Bowel motions",
                            breaks = scales::pretty_breaks()) +
         scale_x_date(breaks = "days",
                      date_labels = "%d %b") +
         scale_color_manual("Blood",
-                           values = c(
-                             "1" = "red",
-                             "0" = "white")
-                           ) +
+                           values = c("1" = "red","0" = "white"),
+                           labels = c("No blood","Blood")) +
         scale_fill_manual(values = c(
           "Brown" = "#A0522D",
           "BrownRed" = "#6e0202",
@@ -107,8 +107,13 @@ server <- function(input, output, session) {
         )) +
         theme_bw() +
         theme(panel.grid = element_blank()) +
-        coord_flip()
-
+        coord_flip(clip = "off") +
+        annotate(geom = "label",
+                 x = e$Start_Date[e$Type=="Treatment"],
+                 y = Inf,
+                 hjust = "right",
+                 label = e$Event[e$Type=="Treatment"],
+                 na.rm=T)
     p
 
     })

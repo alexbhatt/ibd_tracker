@@ -1,0 +1,12 @@
+name: ibd_tracker
+title: ibd_tracker
+username:
+account: alexbhatt
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3724940
+bundleId: 4292802
+url: https://alexbhatt.shinyapps.io/ibd_tracker/
+when: 1614729884.88482
+asMultiple: FALSE
+asStatic: FALSE

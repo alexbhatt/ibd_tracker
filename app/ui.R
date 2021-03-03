@@ -47,7 +47,7 @@ ui <- fluidPage(
                 value = Sys.Date()),
       selectInput(inputId = "Type",
                   label = "Type",
-                  choices = c("Treatment","Admission","Consult","Diagnoistic"),
+                  choices = c("Treatment","Admission","Consult","Diagnostic"),
                   selected = "Treatment"),
       textInput(inputId = "Event",
                 label = "Event",

@@ -7,13 +7,11 @@ ui <- fluidPage(
 
   # Sidebar with a slider input for number of bins
   sidebarLayout(
+
     sidebarPanel(
-      # textInput(inputId = "Date",
-      #           label = "Date",
-      #           value = Sys.Date()),
-      # textInput(inputId = "Time",
-      #           label = "Time",
-      #           value = format(Sys.time(),"%H:%M:%S")),
+
+      ## first set of data collection
+      h3("Motions"),
       textInput(inputId = "Datetime",
                 label = "Datetime",
                 value = Sys.time()),
@@ -34,16 +32,38 @@ ui <- fluidPage(
       textInput(inputId = "Notes",
                 label = "Notes",
                 value = ""),
-      actionButton("submit","Add record")
+      actionButton("submit","Add bowel motion"),
+
+      ## annotative dataset
+      h3("Events"),
+      textInput(inputId = "Start_Date",
+                label = "Date",
+                value = Sys.Date()),
+      selectInput(inputId = "Type",
+                  label = "Type",
+                  choices = c("Treatment","Admission","Consult","Diagnoistic"),
+                  selected = "Treatment"),
+      textInput(inputId = "Event",
+                label = "Event",
+                value = ""),
+      textInput(inputId = "Note",
+                label = "Note",
+                value = ""),
+      actionButton("event","Add event")
     ),
 
     # Show the table of results and the history graph
     mainPanel(
+
+
       # tableOutput("formD"),
       h3("Last 24 hours"),
       DT::dataTableOutput("last24"), tags$hr(),
       h3("History"),
       plotOutput("day_totals")
-    )
-  )
+
+
+
+    ) # mainClose
+  ) # sidebarClose
 )

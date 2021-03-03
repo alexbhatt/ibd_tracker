@@ -14,14 +14,6 @@ options(gargle_oauth_cache = ".secrets")
 gargle::gargle_oauth_cache()
 # trigger auth on purpose to store a token in the specified cache
 # a broswer will be opened
-googlesheets4::sheets_auth()
-# see your token file in the cache, if you like
-list.files(".secrets/")
-# sheets reauth with specified token and email address
-sheets_auth(
-  cache = ".secrets",
-  email = "alex.bhatt@gmail.com"
-)
 
 googlesheets4::gs4_auth(
   email = "alex.bhatt@gmail.com"
@@ -40,9 +32,18 @@ fields <- c(
   "Notes"
 )
 
+## events are seperate
+events <- c(
+  "Start_Date",
+  "Type",
+  "Event",
+  "Note"
+)
+
 ## taken from googleURL
 gsheet_id <- "1bslpAy0ZeheM6cHdpouB7LL75bUbdfnY1iNjjcR8R6Y"
 gsheet_id_stub <- "motions"
+gsheet_id_stub2 <- "events"
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
@@ -55,10 +56,22 @@ saveData <- function(data) {
     )
 }
 
+saveEvent <- function(data) {
+  # The data must be a dataframe rather than a named vector
+  data <- data %>% as.list() %>% data.frame()
+  # Add the data as a new row
+  googlesheets4::sheet_append(
+    ss = gsheet_id,
+    data = data,
+    sheet = gsheet_id_stub2
+  )
+}
+
 loadData <- function() {
   # Read the data
   googlesheets4::read_sheet(
-    gsheet_id,
+    ss = gsheet_id,
+    sheet = gsheet_id_stub,
     col_names = TRUE,
     col_types = "Tcdddc"
     ) %>%

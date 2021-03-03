@@ -14,6 +14,16 @@ server <- function(input, output, session) {
     saveData(formData())
   })
 
+  # Whenever a field is filled, aggregate all form data
+  eventData <- reactive({
+    data <- sapply(events,function(x) input[[x]])
+  })
+
+  # When the Submit button is clicked, save the form data
+  observeEvent(input$event, {
+    saveEvent(eventData())
+  })
+
   # Show the previous responses
   # (update with current response when Submit is clicked)
   output$responses <- DT::renderDataTable({
@@ -56,28 +66,42 @@ server <- function(input, output, session) {
 
       input$submit
 
+    # e <- googlesheets4::read_sheet(
+    #   ss = gsheet_id,
+    #   sheet = gsheet_id_stub2,
+    #   col_names = T,
+    #   col_types = "Dccc"
+    # )
+
       p <- fullData() %>%
         mutate(Date = as.Date(Datetime)) %>%
-        group_by(Date,Colour,Bristol_Score) %>%
         ggplot(aes(x=Date,
-                   fill = Colour),
-               color = "white") +
+                   fill = Colour,
+                   color = as.factor(Blood))) +
         geom_bar(stat="count") +
         geom_text(aes(label = Bristol_Score,
                       y = 1),
                   color = "white",
                   position = position_stack(vjust = 0.5)) +
-        scale_y_continuous(breaks = scales::pretty_breaks()) +
+        scale_y_continuous("Bowel motions",
+                           breaks = scales::pretty_breaks()) +
         scale_x_date(breaks = "days",
                      date_labels = "%d %b") +
+        scale_color_manual("Blood",
+                           values = c(
+                             "1" = "red",
+                             "0" = "white")
+                           ) +
         scale_fill_manual(values = c(
           "Brown" = "#A0522D",
-          "BrownRed" = "#8B0000",
+          "BrownRed" = "#6e0202",
           "LightBrown" = "#B8860B",
-          "Orange" = "#f74b26",
-          "Red" = "#FF0000"
+          "Orange" = "#fa4224",
+          "Red" = "#ac0404"
         )) +
-        theme_bw()
+        theme_bw() +
+        theme(panel.grid = element_blank()) +
+        coord_flip()
 
     p
 

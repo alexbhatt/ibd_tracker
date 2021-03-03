@@ -55,12 +55,22 @@ ui <- fluidPage(
     # Show the table of results and the history graph
     mainPanel(
 
+      tabsetPanel(
+        type = "tabs",
+        tabPanel(
+          "Overview",
+          # tableOutput("formD"),
+          h3("Last 24 hours"),
+          DT::dataTableOutput("last24"), tags$hr(),
+          h3("History"),
+          plotOutput("day_totals")
+        ),
+        tabPanel(
+          "All",
+          DT::dataTableOutput("responses")
+          )
+      )
 
-      # tableOutput("formD"),
-      h3("Last 24 hours"),
-      DT::dataTableOutput("last24"), tags$hr(),
-      h3("History"),
-      plotOutput("day_totals")
 
 
 

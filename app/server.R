@@ -28,7 +28,13 @@ server <- function(input, output, session) {
   # (update with current response when Submit is clicked)
   output$responses <- DT::renderDataTable({
     input$submit
-    loadData()
+    loadData() %>%
+      mutate(Datetime = format(Datetime, "%Y-%m-%d %H:%M")) %>%
+      datatable(
+        options =  list(
+          pageLength = 20
+        )
+      )
   })
 
   fullData <- reactive({

@@ -80,40 +80,75 @@ server <- function(input, output, session) {
     )
 
       p <- fullData() %>%
-        mutate(Date = as.Date(Datetime)) %>%
-        mutate(blocks = 1:n()) %>%
+        mutate(Date = as.Date(Datetime),
+               blocks = 1:n(),
+               Type = "Bowel motions") %>%
+        bind_rows(e %>% select(Date=Start_Date,
+                               Type,
+                               Event) %>%
+                    filter(Type=="Treatment") %>%
+                    group_by(Date,Type) %>%
+                    summarise(Event = paste(Event,collapse = "\n"),
+                              .groups = "drop")) %>%
+        mutate(Type=factor(Type)) %>%
+        mutate(Colour = factor(Colour,
+                               levels = c(
+                                 "LightBrown",
+                                 "Brown",
+                                 "Orange",
+                                 "Red",
+                                 "BrownRed"
+                               )
+        )) %>%
         ggplot(aes(x=Date,
                    fill = Colour,
-                   color = as.factor(Blood))) +
+                   color = as.factor(Blood),
+                   na.rm=T)) +
         geom_bar(aes(group=blocks), stat="count", na.rm=T) +
         geom_text(aes(label = Bristol_Score,
                       y = 1),
                   color = "white",
                   position = position_stack(vjust = 0.5),
                   na.rm=T) +
-        scale_y_continuous("Bowel motions",
-                           breaks = scales::pretty_breaks()) +
+        geom_text(aes(label=Event,
+                       y=0,
+                       hjust=0,
+                      vjust=0.5),
+                   size = 3,
+                   color = "Black",
+                   show.legend = F,
+                   na.rm=T) +
+        scale_y_continuous("",breaks = scales::pretty_breaks()) +
         scale_x_date(breaks = "days",
                      date_labels = "%d %b") +
         scale_color_manual("Blood",
                            values = c("1" = "red","0" = "white"),
-                           labels = c("No blood","Blood")) +
+                           labels = c("No blood","Blood"),
+                           na.translate = F,
+                           guide = guide_legend(nrow=1)) +
         scale_fill_manual(values = c(
-          "Brown" = "#A0522D",
-          "BrownRed" = "#6e0202",
           "LightBrown" = "#B8860B",
+          "Brown" = "#A0522D",
           "Orange" = "#fa4224",
-          "Red" = "#ac0404"
-        )) +
-        theme_bw() +
-        theme(panel.grid = element_blank()) +
+          "Red" = "#ac0404",
+          "BrownRed" = "#6e0202"
+        ),
+        na.translate = F,
+        guide=guide_legend(nrow=1)) +
+        labs(caption = "Numbers within the box represent Bristol Stool scores") +
+        facet_grid(cols = vars(Type),
+                   scales = "free_x",
+                   space = "free_x",
+                   shrink = T,
+                   drop = T) +
         coord_flip(clip = "off") +
-        annotate(geom = "label",
-                 x = e$Start_Date[e$Type=="Treatment"],
-                 y = Inf,
-                 hjust = "right",
-                 label = e$Event[e$Type=="Treatment"],
-                 na.rm=T)
+        theme_bw() +
+        theme(panel.grid = element_blank(),
+              panel.border = element_blank(),
+              plot.margin = margin(0,3,0,0,unit="cm"),
+              legend.position = "bottom",
+              plot.caption = element_text(hjust=0.5))
+
     p
 
     })

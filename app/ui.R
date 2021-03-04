@@ -8,7 +8,7 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins
   sidebarLayout(
 
-    sidebarPanel(
+    sidebarPanel(width = 2,
 
       ## first set of data collection
       h4("Motions"),
@@ -59,7 +59,7 @@ ui <- fluidPage(
     ),
 
     # Show the table of results and the history graph
-    mainPanel(
+    mainPanel(width = 10,
 
       tabsetPanel(
         type = "tabs",

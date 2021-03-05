@@ -3,6 +3,14 @@
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
 
+  observeEvent(input$reset, {
+    updateTextInput(session,"Datetime",value = format(Sys.time(),
+                                                      "%Y-%m-%d %H:%M:%S"))
+    updateTextInput(session,"Notes",value = "")
+    updateTextInput(session,"Event",value = "")
+    updateTextInput(session,"Note",value = "")
+    updateTextInput(session,"Start_Date",value = Sys.Date())
+  })
 
   # Whenever a field is filled, aggregate all form data
   formData <- reactive({
@@ -96,8 +104,8 @@ server <- function(input, output, session) {
                                  "LightBrown",
                                  "Brown",
                                  "Orange",
-                                 "Red",
-                                 "BrownRed"
+                                 "BrownRed",
+                                 "Red"
                                )
         )) %>%
         ggplot(aes(x=Date,
@@ -130,8 +138,8 @@ server <- function(input, output, session) {
           "LightBrown" = "#B8860B",
           "Brown" = "#A0522D",
           "Orange" = "#fa4224",
-          "Red" = "#ac0404",
-          "BrownRed" = "#6e0202"
+          "BrownRed" = "#6e0202",
+          "Red" = "#ac0404"
         ),
         na.translate = F,
         guide=guide_legend(nrow=1)) +

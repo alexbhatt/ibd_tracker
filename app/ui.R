@@ -17,8 +17,12 @@ ui <- fluidPage(
                 value = Sys.time()),
       selectInput(inputId = "Colour",
                   label = "Colour",
-                  choices = c("Yellow","Orange","Brown","BrownRed","Red"),
-                  selected = "BrownRed"),
+                  choices = c("LightBrown",
+                              "Brown",
+                              "Orange",
+                              "BrownRed",
+                              "Red"),
+                  selected = "Brown"),
       selectInput(inputId = "Bristol_Score",
                   label = "Bristol Score",
                   choices = c(1:7),
@@ -55,7 +59,8 @@ ui <- fluidPage(
       textInput(inputId = "Note",
                 label = "Note",
                 value = ""),
-      actionButton("event","Add event")
+      actionButton("event","Add event"),
+      actionButton("reset","Reset fields")
     ),
 
     # Show the table of results and the history graph

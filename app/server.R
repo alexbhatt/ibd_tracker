@@ -22,14 +22,13 @@ server <- function(input, output, session) {
     saveData(formData())
   })
 
-  # Whenever a field is filled, aggregate all form data
-  eventData <- reactive({
-    data <- sapply(events,function(x) input[[x]])
-  })
-
   # When the Submit button is clicked, save the form data
   observeEvent(input$event, {
     saveEvent(eventData())
+  })
+
+  output$print <- DT::renderDataTable({
+    formData() %>% as.list() %>% as.data.frame()
   })
 
   # Show the previous responses
@@ -80,24 +79,10 @@ server <- function(input, output, session) {
 
       input$submit
 
-    e <- googlesheets4::read_sheet(
-      ss = gsheet_id,
-      sheet = gsheet_id_stub2,
-      col_names = T,
-      col_types = "Dccc"
-    )
-
       p <- fullData() %>%
         mutate(Date = as.Date(Datetime),
                blocks = 1:n(),
                Type = "Bowel motions") %>%
-        bind_rows(e %>% select(Date=Start_Date,
-                               Type,
-                               Event) %>%
-                    filter(Type=="Treatment") %>%
-                    group_by(Date,Type) %>%
-                    summarise(Event = paste(Event,collapse = "\n"),
-                              .groups = "drop")) %>%
         mutate(Type=factor(Type)) %>%
         mutate(Colour = factor(Colour,
                                levels = c(
@@ -118,14 +103,6 @@ server <- function(input, output, session) {
                   color = "white",
                   position = position_stack(vjust = 0.5),
                   na.rm=T) +
-        geom_text(aes(label=Event,
-                       y=0,
-                       hjust=0,
-                      vjust=0.5),
-                   size = 3,
-                   color = "Black",
-                   show.legend = F,
-                   na.rm=T) +
         scale_y_continuous("",breaks = scales::pretty_breaks()) +
         scale_x_date(breaks = "days",
                      date_labels = "%d %b") +
@@ -144,11 +121,6 @@ server <- function(input, output, session) {
         na.translate = F,
         guide=guide_legend(nrow=1)) +
         labs(caption = "Numbers within the box represent Bristol Stool scores") +
-        facet_grid(cols = vars(Type),
-                   scales = "free_x",
-                   space = "free_x",
-                   shrink = T,
-                   drop = T) +
         coord_flip(clip = "off") +
         theme_bw() +
         theme(panel.grid = element_blank(),

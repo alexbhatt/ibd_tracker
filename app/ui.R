@@ -43,48 +43,17 @@ ui <- fluidPage(
                 label = "Notes",
                 value = ""),
       actionButton("submit","Add bowel motion"),
-
-      ## annotative dataset
-      h4("Events"),
-      textInput(inputId = "Start_Date",
-                label = "Date",
-                value = Sys.Date()),
-      selectInput(inputId = "Type",
-                  label = "Type",
-                  choices = c("Treatment","Admission","Consult","Diagnostic"),
-                  selected = "Treatment"),
-      textInput(inputId = "Event",
-                label = "Event",
-                value = ""),
-      textInput(inputId = "Note",
-                label = "Note",
-                value = ""),
-      actionButton("event","Add event"),
       actionButton("reset","Reset fields")
     ),
 
     # Show the table of results and the history graph
     mainPanel(width = 10,
-
-      tabsetPanel(
-        type = "tabs",
-        tabPanel(
-          "Overview",
-          # tableOutput("formD"),
-          h3("Last 24 hours"),
-          DT::dataTableOutput("last24"), tags$hr(),
-          h3("History"),
+              h4("left_side_input"),
+      DT::dataTableOutput("print"),
+      h4("responses"),
+          DT::dataTableOutput("responses"), tags$hr(),
+        h4("History"),
           plotOutput("day_totals")
-        ),
-        tabPanel(
-          "All",
-          DT::dataTableOutput("responses")
-          )
+        )
       )
-
-
-
-
-    ) # mainClose
-  ) # sidebarClose
-)
+    )

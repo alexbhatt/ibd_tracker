@@ -3,21 +3,23 @@
 library(shiny)
 library(DT)
 library(googlesheets4)
-library(googledrive)
 library(dplyr)
 library(ggplot2)
 
 
-# designate project-specific cache
-options(gargle_oauth_cache = ".secrets")
-# check the value of the option, if you like
-gargle::gargle_oauth_cache()
-# trigger auth on purpose to store a token in the specified cache
-# a broswer will be opened
-
-googlesheets4::gs4_auth(
-  email = "alex.bhatt@gmail.com"
-)
+if(nrow(gs4_find("public_ibd_tracker_data"))==0){
+  googlesheets4::gs4_create(
+    name = "public_ibd_tracker_data",
+    sheets = as.data.frame(list(
+      "Datetime" = format(Sys.time(),"%Y-%m-%d %H:%M:%S"),
+      "Colour" = "Brown",
+      "Blood" = FALSE,
+      "Bristol_Score" = 4,
+      "Sample" = FALSE,
+      "Notes" = "Example data"
+    )),
+  )
+}
 
 # Define the fields we want to save from the form
 # the names must match the inputID in the UI
@@ -32,18 +34,9 @@ fields <- c(
   "Notes"
 )
 
-## events are seperate
-events <- c(
-  "Start_Date",
-  "Type",
-  "Event",
-  "Note"
-)
-
 ## taken from googleURL
-gsheet_id <- "1bslpAy0ZeheM6cHdpouB7LL75bUbdfnY1iNjjcR8R6Y"
-gsheet_id_stub <- "motions"
-gsheet_id_stub2 <- "events"
+gsheet_id <- gs4_find("public_ibd_tracker_data")$id[1]
+
 
 saveData <- function(data) {
   # The data must be a dataframe rather than a named vector
@@ -51,29 +44,17 @@ saveData <- function(data) {
   # Add the data as a new row
   googlesheets4::sheet_append(
     ss = gsheet_id,
-    data = data,
-    sheet = gsheet_id_stub
+    data = data
     )
-}
-
-saveEvent <- function(data) {
-  # The data must be a dataframe rather than a named vector
-  data <- data %>% as.list() %>% data.frame()
-  # Add the data as a new row
-  googlesheets4::sheet_append(
-    ss = gsheet_id,
-    data = data,
-    sheet = gsheet_id_stub2
-  )
 }
 
 loadData <- function() {
   # Read the data
   googlesheets4::read_sheet(
     ss = gsheet_id,
-    sheet = gsheet_id_stub,
     col_names = TRUE,
-    col_types = "Tcdddc"
+    col_types = "ccdddc"
     ) %>%
-    arrange(desc(Datetime))
+    arrange(desc(Datetime)) %>%
+    mutate(Datetime = as.POSIXct(Datetime))
 }
